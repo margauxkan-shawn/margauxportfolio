@@ -327,35 +327,32 @@
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-8px); }
   }
-  /* ── Carousel: cycle UX → laptop → tablet (w/ brush+code) → phone, 12s loop with crossfades ── */
+  /* ── Carousel: cycle laptop → tablet (w/ brush+code) → phone, 12s loop with crossfades ──
+     Laptop is fully visible from the very start (no empty gap on page load, since the
+     UX-letters and happy-face scenes were removed). Each icon now holds for ~2.8s
+     (1s longer than before) between ~1.2s crossfades, and the loop wraps from phone
+     back to laptop with a crossfade too, so it repeats seamlessly. */
   .device-laptop { animation: cycleLaptop 12s ease-in-out infinite; }
   .device-phone  { animation: cyclePhone  12s ease-in-out infinite; }
-  .device-ux     { animation: cycleUX     12s ease-in-out infinite; }
+  .device-ux     { animation: none; }
   .device-tablet { animation: cycleTablet 12s ease-in-out infinite; }
-  /* Each scene: ~15% fully visible, ~10% fade in + ~10% fade out, crossfading with the next */
-  /* item 1 — UX */
-  @keyframes cycleUX {
-    0%, 15%    { opacity: 1; }
-    25%, 90%   { opacity: 0; }
-    100%       { opacity: 1; }
-  }
-  /* item 2 — laptop */
+  /* item 1 — laptop (visible immediately on load) */
   @keyframes cycleLaptop {
-    0%, 15%    { opacity: 0; }
-    25%, 40%   { opacity: 1; }
-    50%, 100%  { opacity: 0; }
+    0%, 23.333%        { opacity: 1; }
+    33.333%, 90%       { opacity: 0; }
+    100%               { opacity: 1; }
   }
-  /* item 3 — tablet (with brush + code below) */
+  /* item 2 — tablet (with brush + code below) */
   @keyframes cycleTablet {
-    0%, 40%    { opacity: 0; }
-    50%, 65%   { opacity: 1; }
-    75%, 100%  { opacity: 0; }
+    0%, 23.333%        { opacity: 0; }
+    33.333%, 56.667%   { opacity: 1; }
+    66.667%, 100%      { opacity: 0; }
   }
-  /* item 4 — phone */
+  /* item 3 — phone */
   @keyframes cyclePhone {
-    0%, 65%    { opacity: 0; }
-    75%, 90%   { opacity: 1; }
-    100%       { opacity: 0; }
+    0%, 56.667%        { opacity: 0; }
+    66.667%, 90%       { opacity: 1; }
+    100%               { opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
     .device-laptop, .device-tablet, .device-phone, .device-ux, .arch-inner-float { animation: none; }
@@ -481,6 +478,7 @@
   }
   .copy-email-tooltip.show,
   .copy-email-btn:hover .copy-email-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 
   /* ── AI TOOLS ROW ── */
   .ai-tools-row { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1.25rem; opacity:0; animation:fadeUp 0.8s ease forwards 0.65s; }
@@ -642,7 +640,7 @@
     margin-bottom: 2.5rem; max-width: 740px;
   }
 
-  /* Pillar list — single column of white rounded cards (easier to read than the old 2x2 card grid) */
+  /* Pillar list — single column of white rounded cards (easier to read than a 2x2 grid) */
   .l-pillars { display: flex; flex-direction: column; gap: 1rem; }
   .l-pillar {
     background: #fff; border: 1px solid rgba(46,93,159,0.14);
@@ -1289,8 +1287,8 @@
                 <line x1="-6" y1="7" x2="-13" y2="12"/>
                 <line x1="-13" y1="12" x2="-10" y2="7"/>
               </g>
-              <!-- ── HAPPY FACE EMOJI (under UX, no rotation) ── -->
-              <g class="device-ux" transform="translate(210 475) scale(2.5)">
+              <!-- ── HAPPY FACE EMOJI (under UX, no rotation) — hidden ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 475) scale(2.5)">
                 <line x1="0" y1="-10" x2="7" y2="-7"/>
                 <line x1="7" y1="-7" x2="10" y2="0"/>
                 <line x1="10" y1="0" x2="7" y2="7"/>
@@ -1302,8 +1300,8 @@
                 <line x1="-4" y1="3" x2="0" y2="5"/>
                 <line x1="0" y1="5" x2="4" y2="3"/>
               </g>
-              <!-- ── UX LETTERS ── -->
-              <g class="device-ux" transform="translate(210 355) rotate(-6) scale(2.5)">
+              <!-- ── UX LETTERS (hidden) ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 355) rotate(-6) scale(2.5)">
                 <!-- U letter -->
                 <line x1="-37" y1="-22" x2="-37" y2="7"/>
                 <line x1="-37" y1="7" x2="-32" y2="18"/>
@@ -1384,8 +1382,8 @@
                 <circle cx="-10" cy="7" r="2"/>
                 <circle cx="-13" cy="12" r="2.2"/>
               </g>
-              <!-- ── Emoji face anchors ── -->
-              <g class="device-ux" transform="translate(210 475) scale(2.5)">
+              <!-- ── Emoji face anchors (hidden) ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 475) scale(2.5)">
                 <circle cx="0" cy="-10" r="2"/>
                 <circle cx="7" cy="-7" r="2"/>
                 <circle cx="10" cy="0" r="2"/>
@@ -1395,8 +1393,8 @@
                 <circle cx="-10" cy="0" r="2"/>
                 <circle cx="-7" cy="-7" r="2"/>
               </g>
-              <!-- ── UX anchors ── -->
-              <g class="device-ux" transform="translate(210 355) rotate(-6) scale(2.5)">
+              <!-- ── UX anchors (hidden) ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 355) rotate(-6) scale(2.5)">
                 <!-- U corners + bottom -->
                 <circle cx="-37" cy="-22" r="2"/>
                 <circle cx="-13" cy="-22" r="2"/>
@@ -1560,16 +1558,16 @@
                 <circle cx="4" cy="0" r="0.9"/>
                 <circle cx="-6" cy="7" r="0.7"/>
               </g>
-              <!-- ── Emoji features (eyes + smile) ── -->
-              <g class="device-ux" transform="translate(210 475) scale(2.5)">
+              <!-- ── Emoji features (eyes + smile) (hidden) ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 475) scale(2.5)">
                 <circle cx="-3" cy="-3" r="1.1"/>
                 <circle cx="3" cy="-3" r="1.1"/>
                 <circle cx="-4" cy="3" r="0.9"/>
                 <circle cx="0" cy="5" r="1.0"/>
                 <circle cx="4" cy="3" r="0.9"/>
               </g>
-              <!-- ── UX joint stars ── -->
-              <g class="device-ux" transform="translate(210 355) rotate(-6) scale(2.5)">
+              <!-- ── UX joint stars (hidden) ── -->
+              <g class="device-ux" style="display:none" transform="translate(210 355) rotate(-6) scale(2.5)">
                 <!-- U mid-points + curve -->
                 <circle cx="-37" cy="7" r="0.9"/>
                 <circle cx="-13" cy="7" r="0.9"/>
@@ -1683,7 +1681,7 @@
         <div class="case-meta-right">
           <div>
             <span class="impact-num">40%</span>
-            <span class="impact-label">faster voice search results</span>
+            <span class="impact-label">Faster voice search results</span>
           </div>
           <button class="open-deck-btn" onclick="openCaseStudy('ease')">
             View case study
@@ -1903,7 +1901,7 @@
         <div class="r-earlier-item"><p class="r-earlier-role">TC Media — Art Director</p><p class="r-earlier-period">2010 – 2011</p></div>
         <div class="r-earlier-item"><p class="r-earlier-role">IQPC — Senior Designer</p><p class="r-earlier-period">2008 – 2010</p></div>
       </div>
-      <p style="margin-top:1.1rem; font-size:0.9rem; color:var(--text-muted);">For previous work experience, see my <a href="http://linkedin.com/in/margaux-kan-07b4502" target="_blank" style="color:var(--berry); font-weight:500; text-decoration:none; border-bottom:1px solid var(--border);">LinkedIn</a> or visit <a href="https://hellomkstudio.com/" target="_blank" style="color:var(--berry); font-weight:500; text-decoration:none; border-bottom:1px solid var(--border);">www.hellomkstudio.com</a>.</p>
+      <p style="margin-top:1.1rem; font-size:0.9rem; color:var(--text-muted);">For previous work experience, see my <a href="http://linkedin.com/in/margaux-kan-07b4502" target="_blank" style="color:var(--berry); font-weight:500; text-decoration:none; border-bottom:1px solid var(--border);">LinkedIn</a>.</p>
     </div>
 
     <!-- CORE COMPETENCIES -->
