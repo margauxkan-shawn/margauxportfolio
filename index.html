@@ -785,6 +785,8 @@
   /* PDF slide stage — each page rendered full-size to a canvas, Prev/Next nav */
   .deck-slides:has(.deck-pdf-stage) { max-width: 1320px; padding: 1.25rem clamp(0.75rem, 3vw, 2rem); display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .deck-pdf-stage { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .deck-slides:has(.deck-html-frame) { max-width: none; padding: 0; overflow: hidden; }
+  .deck-html-frame { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
   .deck-pdf-canvas { max-width: 100%; max-height: 100%; border-radius: var(--r-md); box-shadow: 0 18px 50px rgba(30,39,97,0.18); background: #fff; display: block; }
   .deck-loading { font-family: var(--sans); font-size: 0.92rem; color: #2e5d9f; opacity: 0.72; text-align: center; line-height: 1.6; }
   .deck-slide { padding: 2.5rem 3rem; border-bottom: 1px solid var(--border); min-height: 260px; display: flex; flex-direction: column; justify-content: center; }
@@ -2003,14 +2005,17 @@ const obs = new IntersectionObserver(entries => {
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-// Case-study PDFs follow a fixed naming convention so they can be swapped
+// Case-study files follow a fixed naming convention so they can be swapped
 // in periodically without touching code — just overwrite the file in
-// /case-studies with the same name:
-//   MK_Casestudy1_A.pdf  → ACV EASE        (1 = first ACV study,  A = ACV)
+// /case-studies with the same name. Most entries are PDFs, rendered
+// page-by-page in the in-page slide viewer via pdf.js. An entry can instead
+// be a self-contained HTML file by adding type: "html" — it's embedded
+// directly in an iframe and skips the PDF page controls.
+//   MK_Casestudy1_A.html → ACV EASE        (1 = first ACV study,  A = ACV)
 //   MK_Casestudy2_A.pdf  → ACV Capital     (2 = second ACV study, A = ACV)
 //   MK_Casestudy3_R.pdf  → RBC MyAdvisor   (3 = third study,      R = RBC)
 const pdfData = {
-  ease:    { url: "case-studies/MK_Casestudy1_A.pdf", name: "MK_Casestudy1_A.pdf", label: "ACV EASE — AI Voice Search" },
+  ease:    { url: "case-studies/MK_Casestudy1_A.html", name: "MK_Casestudy1_A.html", label: "ACV EASE — AI Voice Search", type: "html" },
   capital: { url: "case-studies/MK_Casestudy2_A.pdf", name: "MK_Casestudy2_A.pdf", label: "ACV Capital — Floorplan Platform" },
   rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform" },
 };
@@ -2098,6 +2103,7 @@ document.addEventListener('keydown', e => {
 function openCaseStudyPdf(key) {
   const pdf = pdfData[key];
   if (!pdf) return;
+  if (pdf.type === 'html') { window.open(pdf.url, '_blank'); return; }
   const win = window.open('', '_blank');
   // If a popup blocker prevents window.open, fall back to direct navigation.
   if (!win) { window.location.href = pdf.url; return; }
@@ -2126,20 +2132,34 @@ async function openCaseStudy(key) {
   activeKey = key;
   currentPage = 1;
   totalPages = 0;
+  pdfDoc = null;
   document.getElementById('deckLabel').textContent = pdf.label;
+  document.getElementById('deckPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Self-contained HTML case studies embed directly in an iframe and drive
+  // their own internal navigation, so the PDF page controls don't apply.
+  if (pdf.type === 'html') {
+    document.getElementById('deckPdfBtn').style.display = 'none';
+    document.querySelector('.deck-footer-nav').style.display = 'none';
+    document.getElementById('deckSlides').innerHTML =
+      `<iframe class="deck-html-frame" src="${pdf.url}" title="${pdf.label}"></iframe>`;
+    return;
+  }
+
+  document.getElementById('deckPdfBtn').style.display = '';
+  document.querySelector('.deck-footer-nav').style.display = '';
   document.getElementById('deckCounter').textContent = '\u2014 / \u2014';
   document.getElementById('deckProgress').style.width = '0%';
   document.getElementById('deckSlides').innerHTML =
     '<div class="deck-pdf-stage"><div class="deck-loading">Loading case study\u2026</div></div>';
-  document.getElementById('deckPanel').classList.add('open');
-  document.body.style.overflow = 'hidden';
   try {
     pdfDoc = await pdfjsLib.getDocument(pdf.url).promise;
     totalPages = pdfDoc.numPages;
     renderPage(currentPage);
   } catch (e) {
     document.getElementById('deckSlides').innerHTML =
-      `<div class="deck-pdf-stage"><div class="deck-loading">Couldn't load this case study.<br><a href="${pdf.url}" target="_blank" style="color:#2e5d9f">Open the PDF directly \u2192</a></div></div>`;
+      `<div class="deck-pdf-stage"><div class="deck-loading">Couldn't load this case study.<br><a href="${pdf.url}" target="_blank" style="color:#2e5d9f">Open the file directly \u2192</a></div></div>`;
   }
 }
 
