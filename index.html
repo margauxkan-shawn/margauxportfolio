@@ -612,6 +612,16 @@
   }
   .open-deck-btn:hover { opacity: 0.88; box-shadow: 0 4px 18px rgba(46,93,159,0.35); }
 
+  .case-cta-group { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .download-pdf-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 0.6rem 1.1rem; background: transparent; color: var(--accent);
+    font-size: 0.78rem; font-weight: 500; border: 1px solid var(--border); cursor: pointer;
+    border-radius: var(--r-full); font-family: var(--sans); text-decoration: none;
+    transition: border-color 0.2s, background 0.2s; white-space: nowrap;
+  }
+  .download-pdf-btn:hover { border-color: var(--border-hover); background: var(--surface); }
+
   /* ── LEADERSHIP ── */
   /* ── LEADERSHIP (unified) ── */
   .leadership-section {
@@ -1049,7 +1059,7 @@
       </div>
     </div>
     <div class="nav-item nav-item--link">
-      <a href="#leadership">UX Leadership &amp; Impact</a>
+      <a href="#leadership">Leadership &amp; Impact</a>
     </div>
     <div class="nav-item nav-item--link">
       <a href="#resume">Resume</a>
@@ -1068,7 +1078,7 @@
     <a href="#work" onclick="closeMobileMenu(); openCaseStudy('capital')">Capital Floorplan Platform</a>
     <a href="#work" onclick="closeMobileMenu(); openCaseStudy('rbc')">RBC MyAdvisor</a>
   </div>
-  <a href="#leadership" onclick="closeMobileMenu()">UX Leadership &amp; Impact</a>
+  <a href="#leadership" onclick="closeMobileMenu()">Leadership &amp; Impact</a>
   <a href="#resume" onclick="closeMobileMenu()">Resume</a>
   <a href="mailto:margauxkan@gmail.com" onclick="closeMobileMenu()">Get in touch</a>
 </div>
@@ -1685,10 +1695,16 @@
             <span class="impact-num">40%</span>
             <span class="impact-label">Faster voice search results</span>
           </div>
-          <button class="open-deck-btn" onclick="openCaseStudy('ease')">
-            View case study
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+          <div class="case-cta-group">
+            <button class="open-deck-btn" onclick="openCaseStudy('ease')">
+              View case study
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a class="download-pdf-btn" href="case-studies/MK_Casestudy1_A.pdf" download="MK_Casestudy1_A.pdf" title="Download PDF">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -2010,13 +2026,16 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 // /case-studies with the same name. Most entries are PDFs, rendered
 // page-by-page in the in-page slide viewer via pdf.js. An entry can instead
 // be a self-contained HTML file by adding type: "html" — it's embedded
-// directly in an iframe and skips the PDF page controls.
-//   MK_Casestudy1_A.html → ACV EASE        (1 = first ACV study,  A = ACV)
-//   MK_Casestudy2_A.pdf  → ACV Capital     (2 = second ACV study, A = ACV)
-//   MK_Casestudy3_R.pdf  → RBC MyAdvisor   (3 = third study,      R = RBC)
+// directly in an iframe and skips the PDF page controls. HTML entries can
+// also list a companion pdfUrl/pdfName — a static PDF version of the same
+// case study — so the deck's "View PDF" button still has something to open
+// and download even though the main view is the interactive HTML demo.
+//   MK_Casestudy1_A.html / .pdf → ACV EASE     (1 = first ACV study,  A = ACV)
+//   MK_Casestudy2_A.html / .pdf → ACV Capital  (2 = second ACV study, A = ACV)
+//   MK_Casestudy3_R.pdf         → RBC MyAdvisor (3 = third study,     R = RBC)
 const pdfData = {
-  ease:    { url: "case-studies/MK_Casestudy1_A.html", name: "MK_Casestudy1_A.html", label: "ACV EASE — AI Voice Search", type: "html" },
-  capital: { url: "case-studies/MK_Casestudy2_A.html", name: "MK_Casestudy2_A.html", label: "ACV Capital — Floorplan Platform" },
+  ease:    { url: "case-studies/MK_Casestudy1_A.html", name: "MK_Casestudy1_A.html", label: "ACV EASE — AI Voice Search", type: "html", pdfUrl: "case-studies/MK_Casestudy1_A.pdf", pdfName: "MK_Casestudy1_A.pdf" },
+  capital: { url: "case-studies/MK_Casestudy2_A.html", name: "MK_Casestudy2_A.html", label: "ACV Capital — Floorplan Platform", type: "html", pdfUrl: "case-studies/MK_Casestudy2_A.pdf", pdfName: "MK_Casestudy2_A.pdf" },
   rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform" },
 };
 
@@ -2103,10 +2122,15 @@ document.addEventListener('keydown', e => {
 function openCaseStudyPdf(key) {
   const pdf = pdfData[key];
   if (!pdf) return;
-  if (pdf.type === 'html') { window.open(pdf.url, '_blank'); return; }
+  // HTML case studies may list a companion static PDF (pdfUrl/pdfName) — use
+  // that for the download popup. If none is set, just open the interactive
+  // HTML demo itself in a new tab as a fallback.
+  if (pdf.type === 'html' && !pdf.pdfUrl) { window.open(pdf.url, '_blank'); return; }
+  const fileUrl = pdf.pdfUrl || pdf.url;
+  const fileName = pdf.pdfName || pdf.name;
   const win = window.open('', '_blank');
   // If a popup blocker prevents window.open, fall back to direct navigation.
-  if (!win) { window.location.href = pdf.url; return; }
+  if (!win) { window.location.href = fileUrl; return; }
   win.document.write(`<!DOCTYPE html><html><head><title>${pdf.label}</title>
   <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a1a;display:flex;flex-direction:column;height:100vh}
   .bar{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1.5rem;background:#2e5d9f;color:#fff;font-family:sans-serif;font-size:0.9rem;flex-shrink:0}
@@ -2115,8 +2139,8 @@ function openCaseStudyPdf(key) {
   iframe{flex:1;border:none;width:100%}</style></head>
   <body>
   <div class="bar"><span>${pdf.label}</span>
-  <a href="${pdf.url}" download="${pdf.name}">⬇ Download PDF</a></div>
-  <iframe src="${pdf.url}"></iframe>
+  <a href="${fileUrl}" download="${fileName}">⬇ Download PDF</a></div>
+  <iframe src="${fileUrl}"></iframe>
   </body></html>`);
   win.document.close();
 }
@@ -2139,8 +2163,10 @@ async function openCaseStudy(key) {
 
   // Self-contained HTML case studies embed directly in an iframe and drive
   // their own internal navigation, so the PDF page controls don't apply.
+  // The "View PDF" button stays visible whenever a companion pdfUrl exists,
+  // so visitors can still open/download the static PDF version.
   if (pdf.type === 'html') {
-    document.getElementById('deckPdfBtn').style.display = 'none';
+    document.getElementById('deckPdfBtn').style.display = pdf.pdfUrl ? '' : 'none';
     document.querySelector('.deck-footer-nav').style.display = 'none';
     document.getElementById('deckSlides').innerHTML =
       `<iframe class="deck-html-frame" src="${pdf.url}" title="${pdf.label}"></iframe>`;
