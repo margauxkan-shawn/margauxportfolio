@@ -1735,10 +1735,16 @@
             <span class="impact-num">83%</span>
             <span class="impact-label">Top-tier retention</span>
           </div>
-          <button class="open-deck-btn" onclick="openCaseStudy('capital')">
-            View case study
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+          <div class="case-cta-group">
+            <button class="open-deck-btn" onclick="openCaseStudy('capital')">
+              View case study
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a class="download-pdf-btn" href="case-studies/MK_Casestudy2_A.pdf" download="MK_Casestudy2_A.pdf" title="Download PDF">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1769,10 +1775,16 @@
             <span class="impact-num">68%</span>
             <span class="impact-label">Advisor adoption</span>
           </div>
-          <button class="open-deck-btn" onclick="openCaseStudy('rbc')">
-            View case study
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
+          <div class="case-cta-group">
+            <button class="open-deck-btn" onclick="openCaseStudy('rbc')">
+              View case study
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <a class="download-pdf-btn" href="case-studies/MK_Casestudy3_R.pdf" download="MK_Casestudy3_R.pdf" title="Download PDF">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download PDF
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -1993,7 +2005,13 @@
 <div class="deck-panel" id="deckPanel">
   <div class="deck-frame">
     <div class="deck-nav">
-      <span class="deck-title" id="deckLabel">Case Study</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <button class="deck-close" id="deckHomeBtn" title="Back to home" onclick="closeDeck()" style="display:flex;align-items:center;gap:0.35rem;width:auto;height:36px;padding:0 0.9rem;font-size:0.8rem;border-radius:999px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <span class="deck-title" id="deckLabel">Case Study</span>
+      </div>
       <div style="display:flex;align-items:center;gap:0.6rem;">
         <button class="deck-pdf-btn" id="deckPdfBtn" onclick="openPdf()" title="View & download PDF">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
