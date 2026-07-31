@@ -800,17 +800,20 @@
      (e.g. "View the full interactive prototype"). Percentages are relative to
      the canvas so alignment holds at any zoom/window size. */
   .deck-pdf-hotspot { position: absolute; cursor: pointer; }
+  /* Matches the yellow "View the full interactive prototype" pill already
+     baked into the deck's own last page — same fill (#FEDF01) and text
+     color (#0563C1), so the added CTA on earlier pages looks native to
+     the deck rather than like a UI overlay. */
   .deck-pdf-cta {
     position: absolute; z-index: 5;
-    display: flex; align-items: center; gap: 6px;
-    padding: 0.55rem 1.15rem; font-size: 0.82rem; font-weight: 600;
-    background: linear-gradient(135deg, #2e5d9f, #2e5d9f);
-    color: #fff; border-radius: var(--r-full); text-decoration: none;
-    font-family: var(--sans); box-shadow: 0 10px 26px rgba(30,39,97,0.28);
+    display: flex; align-items: center; gap: 8px;
+    padding: 0.7rem 1.4rem; font-size: 0.85rem; font-weight: 700;
+    background: #FEDF01; color: #0563C1;
+    border-radius: var(--r-full); text-decoration: none;
+    font-family: var(--sans); box-shadow: 0 6px 16px rgba(0,0,0,0.16);
     transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
   }
   .deck-pdf-cta:hover { opacity: 0.88; transform: translateY(-1px); }
-  .deck-pdf-cta--bottom-left { left: 14px; bottom: 14px; }
   .deck-slides:has(.deck-html-frame) { max-width: none; padding: 0; overflow: hidden; }
   .deck-html-frame { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
   .deck-pdf-canvas { max-width: 100%; max-height: 100%; border-radius: var(--r-md); box-shadow: 0 18px 50px rgba(30,39,97,0.18); background: #fff; display: block; }
@@ -2073,7 +2076,7 @@ const pdfData = {
   // prototypeRect is the yellow "View the full interactive prototype" button's
   // exact position on the last page (page 12 of 12, 959x540pt), expressed as
   // percentages of the page so the hotspot lines up at any render size.
-  rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform", prototypeUrl: "case-studies/prototypes/RBC_myadvisor_Static_Final.html", prototypeRect: { left: 29.78, top: 84.37, width: 40.54, height: 7.6 }, prototypeCTA: { pages: [2, 3], corner: "bottom-left", label: "View prototype →" } },
+  rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform", prototypeUrl: "case-studies/prototypes/RBC_myadvisor_Static_Final.html", prototypeRect: { left: 29.78, top: 84.37, width: 40.54, height: 7.6 }, prototypeCTA: { pages: [2, 3] } },
 };
 
 // ── Case-study deck: render the PDF page-by-page inside the in-page overlay ──
@@ -2148,16 +2151,21 @@ async function renderPage(num) {
     wrap.appendChild(link);
   }
 
-  // Visible corner CTA for specific pages that don't already have a button
-  // drawn into the PDF page image (e.g. earlier pages of the deck).
+  // Visible CTA for specific pages that don't already have a button drawn
+  // into the PDF page image — positioned to align with the deck's own
+  // content margin (left: 7.13% = the page's left content margin, 68.4pt
+  // of 959pt; bottom: 7.96% ≈ the same bottom margin the yellow button on
+  // the last page uses, 43.4pt of 540pt).
   if (pdf && pdf.prototypeUrl && pdf.prototypeCTA && pdf.prototypeCTA.pages.includes(num)) {
     const cta = pdf.prototypeCTA;
     const link = document.createElement('a');
-    link.className = 'deck-pdf-cta deck-pdf-cta--' + (cta.corner || 'bottom-left');
+    link.className = 'deck-pdf-cta';
     link.href = pdf.prototypeUrl;
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = cta.label || 'View prototype →';
+    link.style.left   = (cta.left   != null ? cta.left   : 7.13) + '%';
+    link.style.bottom = (cta.bottom != null ? cta.bottom : 7.96) + '%';
+    link.textContent = cta.label || '▶ View the full interactive prototype';
     wrap.appendChild(link);
   }
 
