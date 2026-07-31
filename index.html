@@ -795,19 +795,11 @@
   /* PDF slide stage — each page rendered full-size to a canvas, Prev/Next nav */
   .deck-slides:has(.deck-pdf-stage) { max-width: 1320px; padding: 1.25rem clamp(0.75rem, 3vw, 2rem); display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .deck-pdf-stage { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  /* "Launch Prototype" CTA — only appears on the last page of a PDF case study that has a companion prototype */
-  .deck-prototype-btn {
-    position: absolute; bottom: 1.75rem; right: 1.75rem; z-index: 5;
-    display: flex; align-items: center; gap: 6px;
-    padding: 0.7rem 1.5rem; font-size: 0.88rem; font-weight: 600;
-    background: linear-gradient(135deg, #2e5d9f, #2e5d9f);
-    color: #fff; border-radius: var(--r-full); text-decoration: none;
-    font-family: var(--sans); box-shadow: 0 12px 30px rgba(30,39,97,0.28);
-    transition: opacity 0.2s, transform 0.2s;
-    opacity: 0; transform: translateY(8px); pointer-events: none;
-  }
-  .deck-prototype-btn.show { opacity: 1; transform: translateY(0); pointer-events: all; }
-  .deck-prototype-btn:hover { opacity: 0.88; }
+  .deck-pdf-canvas-wrap { position: relative; display: inline-block; line-height: 0; }
+  /* Invisible hotspot placed exactly over a button baked into the PDF page image
+     (e.g. "View the full interactive prototype"). Percentages are relative to
+     the canvas so alignment holds at any zoom/window size. */
+  .deck-pdf-hotspot { position: absolute; cursor: pointer; }
   .deck-slides:has(.deck-html-frame) { max-width: none; padding: 0; overflow: hidden; }
   .deck-html-frame { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
   .deck-pdf-canvas { max-width: 100%; max-height: 100%; border-radius: var(--r-md); box-shadow: 0 18px 50px rgba(30,39,97,0.18); background: #fff; display: block; }
@@ -2036,7 +2028,6 @@
     </div>
     <div class="deck-progress"><div class="deck-progress-fill" id="deckProgress"></div></div>
     <div class="deck-slides" id="deckSlides"></div>
-    <a class="deck-prototype-btn" id="deckPrototypeBtn" href="#" target="_blank" rel="noopener">Launch Prototype →</a>
     <div class="deck-footer-nav">
       <button class="deck-btn" onclick="prevSlide()">← Prev</button>
       <span class="deck-counter" id="deckCounter">1 / 1</span>
@@ -2068,7 +2059,10 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 const pdfData = {
   ease:    { url: "case-studies/MK_Casestudy1_A.html", name: "MK_Casestudy1_A.html", label: "ACV EASE — AI Voice Search", type: "html", pdfUrl: "case-studies/MK_Casestudy1_A.pdf", pdfName: "MK_Casestudy1_A.pdf" },
   capital: { url: "case-studies/MK_Casestudy2_A.html", name: "MK_Casestudy2_A.html", label: "ACV Capital — Floorplan Platform", type: "html", pdfUrl: "case-studies/MK_Casestudy2_A.pdf", pdfName: "MK_Casestudy2_A.pdf" },
-  rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform", prototypeUrl: "case-studies/RBC_myadvisor_Static_Final.html" },
+  // prototypeRect is the yellow "View the full interactive prototype" button's
+  // exact position on the last page (page 12 of 12, 959x540pt), expressed as
+  // percentages of the page so the hotspot lines up at any render size.
+  rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform", prototypeUrl: "case-studies/prototypes/RBC_myadvisor_Static_Final.html", prototypeRect: { left: 29.78, top: 84.37, width: 40.54, height: 7.6 } },
 };
 
 // ── Case-study deck: render the PDF page-by-page inside the in-page overlay ──
@@ -2117,8 +2111,31 @@ async function renderPage(num) {
   canvas.height = Math.floor(viewport.height);
   canvas.style.width  = Math.floor(viewport.width / dpr) + 'px';
   canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
+
+  // Wrap the canvas so an invisible link can be positioned on top of it using
+  // percentages — this keeps the overlay aligned with content baked into the
+  // PDF page image (e.g. an existing "View prototype" button) at any size.
+  const wrap = document.createElement('div');
+  wrap.className = 'deck-pdf-canvas-wrap';
+  wrap.appendChild(canvas);
   stage.innerHTML = '';
-  stage.appendChild(canvas);
+  stage.appendChild(wrap);
+
+  const pdf = pdfData[activeKey];
+  if (pdf && pdf.prototypeUrl && pdf.prototypeRect && num === totalPages) {
+    const r = pdf.prototypeRect;
+    const link = document.createElement('a');
+    link.className = 'deck-pdf-hotspot';
+    link.href = pdf.prototypeUrl;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.title = 'View the full interactive prototype';
+    link.style.left   = r.left + '%';
+    link.style.top    = r.top + '%';
+    link.style.width  = r.width + '%';
+    link.style.height = r.height + '%';
+    wrap.appendChild(link);
+  }
 
   currentRenderTask = page.render({ canvasContext: canvas.getContext('2d'), viewport });
   try { await currentRenderTask.promise; } catch (e) { return; }      // cancelled or failed
@@ -2127,20 +2144,6 @@ async function renderPage(num) {
   currentRenderTask = null;
   document.getElementById('deckCounter').textContent = num + ' / ' + totalPages;
   updateDeckProgress();
-  updatePrototypeBtn(num);
-}
-
-// Shows the floating "Launch Prototype" CTA only on the last page of a PDF
-// case study that has a companion prototypeUrl (e.g. RBC MyAdvisor).
-function updatePrototypeBtn(num) {
-  const btn = document.getElementById('deckPrototypeBtn');
-  const pdf = pdfData[activeKey];
-  if (pdf && pdf.prototypeUrl && num === totalPages) {
-    btn.href = pdf.prototypeUrl;
-    btn.classList.add('show');
-  } else {
-    btn.classList.remove('show');
-  }
 }
 
 function nextSlide() { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } }
@@ -2206,7 +2209,6 @@ async function openCaseStudy(key) {
   document.getElementById('deckLabel').textContent = pdf.label;
   document.getElementById('deckPanel').classList.add('open');
   document.body.style.overflow = 'hidden';
-  document.getElementById('deckPrototypeBtn').classList.remove('show');
 
   // Self-contained HTML case studies embed directly in an iframe and drive
   // their own internal navigation, so the PDF page controls don't apply.
@@ -2239,7 +2241,6 @@ async function openCaseStudy(key) {
 function closeDeck() {
   document.getElementById('deckPanel').classList.remove('open');
   document.body.style.overflow = '';
-  document.getElementById('deckPrototypeBtn').classList.remove('show');
   renderToken++;                                     // invalidate any in-flight render
   if (currentRenderTask) { try { currentRenderTask.cancel(); } catch (e) {} currentRenderTask = null; }
 }
