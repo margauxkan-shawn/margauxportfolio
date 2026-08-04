@@ -784,13 +784,16 @@
   .deck-thumb-num { font-size: 0.78rem; font-weight: 700; color: #2e5d9f; opacity: 0.55; width: 1.1rem; flex-shrink: 0; padding-top: 0.3rem; }
   .deck-thumb-item.active .deck-thumb-num { opacity: 1; }
   .deck-thumb-canvas-wrap {
-    flex: 1; border-radius: 8px; overflow: hidden; background: #fff;
-    box-shadow: 0 2px 8px rgba(30,39,97,0.12);
+    flex: 1; min-width: 0; border-radius: 8px; overflow: hidden; background: #fff;
+    box-shadow: 0 2px 8px rgba(30,39,97,0.12); display: block;
     border: 2px solid transparent; transition: border-color 0.2s, box-shadow 0.2s;
   }
   .deck-thumb-item:hover .deck-thumb-canvas-wrap { box-shadow: 0 4px 14px rgba(30,39,97,0.2); }
   .deck-thumb-item.active .deck-thumb-canvas-wrap { border-color: #FEDF01; box-shadow: 0 0 0 1px #FEDF01, 0 4px 14px rgba(30,39,97,0.22); }
-  .deck-thumb-canvas-wrap canvas, .deck-thumb-canvas-wrap img { display: block; width: 100%; height: auto; }
+  /* aspect-ratio (set inline per page) makes the wrap the exact shape of the
+     PDF page, so width:100%/height:100% always shows the full slide — no
+     cropping regardless of how wide the sidebar column ends up being. */
+  .deck-thumb-canvas-wrap canvas, .deck-thumb-canvas-wrap img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .deck-close {
     background: rgba(46,93,159,0.12); border: 1px solid rgba(46,93,159,0.3); color: #2e5d9f;
     width: 36px; height: 36px; cursor: pointer; font-size: 0.95rem; border-radius: 50%;
@@ -1171,7 +1174,7 @@
         <span class="hero-morph" id="morph-4">changes minds.</span>
       </span>
     </h1>
-    <p class="hero-tagline">With <strong>18 years of experience</strong> shipping 0→1 platforms, I bridge the gap between <strong>design and engineering</strong>. I specialize in modernizing workflows by building prototypes in the repo and scaling AI augmented tools like <strong>Claude Code</strong> to accelerate delivery.</p>
+    <p class="hero-tagline">With <strong>18 years of experience</strong> shipping 0→1 platforms, I bridge the gap between <strong>design and engineering</strong>. I specialize in modernizing workflows by building prototypes in the repo and scaling tools like <strong>Claude Code</strong> to accelerate delivery.</p>
   </div>
 
   <!-- CONSTELLATION PORTRAIT — Margaux as starscape inside arch -->
@@ -1726,10 +1729,10 @@
             <div class="case-num">Case Study 01</div>
             <h3 class="case-title">AI Voice Search</h3>
           </div>
-          <p class="case-co">ACV Auctions · AI-powered vehicle search</p>
+          <p class="case-co">ACV Auctions · Natural-language vehicle search</p>
           <div class="case-tags">
             <span class="case-tag">Mobile</span>
-            <span class="case-tag">AI / Voice</span>
+            <span class="case-tag">Voice UX</span>
             <span class="case-tag">Search UX</span>
             <span class="case-tag">Sr. Design Leader</span>
           </div>
@@ -1841,7 +1844,7 @@
   <div style="max-width: 860px; margin: 0 auto;">
 
     <p class="sec-tag">UX Leadership &amp; AI Design</p>
-    <h2>Building capability.<br>Shipping with AI.</h2>
+    <h2>Building capability.<br>Delivering impact.</h2>
 
     <!-- UX Vision quote from PDF -->
     <blockquote class="l-quote">
@@ -1870,7 +1873,7 @@
         <ul class="l-pillar-list l-pillar-list--light">
           <li>Accelerate discovery with <strong>AI-assisted synthesis</strong> and <strong>sentiment analysis</strong> while preserving research quality</li>
           <li>Partner with Engineering and Legal to ensure AI-powered experiences are <strong>ethical, transparent, and user-centric</strong></li>
-          <li>Train full design team on <strong>Claude Code</strong>, <strong>AI design review</strong>, and <strong>hackathon readiness</strong> with repo access</li>
+          <li>Train the full design team on <strong>Claude Code</strong> and repo-based workflows, building AI fluency org-wide</li>
         </ul>
       </div>
 
@@ -2220,8 +2223,8 @@ document.addEventListener('fullscreenchange', () => setTimeout(refitCurrentPage,
 document.getElementById('deckPanel').addEventListener('click', e => { if (e.target===e.currentTarget) closeDeck(); });
 document.addEventListener('keydown', e => {
   if (!document.getElementById('deckPanel').classList.contains('open')) return;
-  if (e.key==='ArrowRight') nextSlide();
-  if (e.key==='ArrowLeft') prevSlide();
+  if (e.key==='ArrowRight' || e.key==='ArrowDown') { e.preventDefault(); nextSlide(); }
+  if (e.key==='ArrowLeft'  || e.key==='ArrowUp')   { e.preventDefault(); prevSlide(); }
   if (e.key==='Escape') closeDeck();
 });
 
@@ -2307,30 +2310,31 @@ async function openCaseStudy(key) {
 
 // Build the left-hand rail of numbered page thumbnails for PDF-rendered
 // case studies (mirrors the slide rail on the self-contained HTML decks).
-// Renders each page to a small canvas at low scale — cheap enough for the
-// page counts these decks run (a dozen or so slides).
+// Renders each page to a small canvas — cheap enough for the page counts
+// these decks run (a dozen or so slides).
 let thumbRenderToken = 0;
 async function buildThumbSidebar() {
   const token = ++thumbRenderToken;
   const sidebar = document.getElementById('deckThumbSidebar');
   sidebar.innerHTML = '';
   if (!pdfDoc) return;
-  const THUMB_WIDTH = 150;
+  // Rendered intrinsic width in canvas pixels — independent of the sidebar's
+  // actual CSS width. The wrap's aspect-ratio (set from the real page
+  // dimensions below) is what makes the thumbnail display at full size
+  // without cropping; this constant just controls crispness.
+  const RENDER_WIDTH = 320;
   for (let num = 1; num <= totalPages; num++) {
     let page;
     try { page = await pdfDoc.getPage(num); } catch (e) { continue; }
     if (token !== thumbRenderToken) return;
 
     const base = page.getViewport({ scale: 1 });
-    const scale = THUMB_WIDTH / base.width;
-    const dpr = window.devicePixelRatio || 1;
-    const viewport = page.getViewport({ scale: scale * dpr });
+    const scale = RENDER_WIDTH / base.width;
+    const viewport = page.getViewport({ scale });
 
     const canvas = document.createElement('canvas');
     canvas.width = Math.floor(viewport.width);
     canvas.height = Math.floor(viewport.height);
-    canvas.style.width = THUMB_WIDTH + 'px';
-    canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
 
     try { await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise; } catch (e) { continue; }
     if (token !== thumbRenderToken) return;
@@ -2339,7 +2343,7 @@ async function buildThumbSidebar() {
     item.type = 'button';
     item.className = 'deck-thumb-item' + (num === currentPage ? ' active' : '');
     item.dataset.page = num;
-    item.innerHTML = `<span class="deck-thumb-num">${num}</span><span class="deck-thumb-canvas-wrap"></span>`;
+    item.innerHTML = `<span class="deck-thumb-num">${num}</span><span class="deck-thumb-canvas-wrap" style="aspect-ratio:${base.width}/${base.height}"></span>`;
     item.querySelector('.deck-thumb-canvas-wrap').appendChild(canvas);
     item.addEventListener('click', () => { currentPage = num; renderPage(num); });
     sidebar.appendChild(item);
