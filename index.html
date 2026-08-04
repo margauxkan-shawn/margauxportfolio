@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Margaux Kan — Senior Product Design Manager</title>
+<title>Margaux Kan — Senior Design Leader</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,800;1,6..96,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -770,6 +770,27 @@
   .deck-title { font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #2e5d9f; }
   .deck-progress { height: 3px; background: rgba(46,93,159,0.12); flex-shrink: 0; }
   .deck-progress-fill { height: 100%; background: linear-gradient(90deg,#2e5d9f,#2e5d9f); transition: width 0.3s ease; }
+  /* Body row: slide thumbnail rail (left) + main stage (right) — mirrors the
+     nav chrome of the self-contained HTML decks so every case study reads
+     the same way regardless of whether it's rendered from a PDF or HTML. */
+  .deck-body { flex: 1; display: flex; overflow: hidden; }
+  .deck-thumb-sidebar {
+    width: 190px; flex-shrink: 0; overflow-y: auto;
+    background: #DDEDEF; border-right: 1px solid rgba(46,93,159,0.15);
+    padding: 1rem 0.85rem; display: flex; flex-direction: column; gap: 0.85rem;
+  }
+  .deck-thumb-sidebar:empty { display: none; }
+  .deck-thumb-item { display: flex; align-items: flex-start; gap: 0.55rem; cursor: pointer; border: none; background: transparent; padding: 0; text-align: left; font-family: var(--sans); }
+  .deck-thumb-num { font-size: 0.78rem; font-weight: 700; color: #2e5d9f; opacity: 0.55; width: 1.1rem; flex-shrink: 0; padding-top: 0.3rem; }
+  .deck-thumb-item.active .deck-thumb-num { opacity: 1; }
+  .deck-thumb-canvas-wrap {
+    flex: 1; border-radius: 8px; overflow: hidden; background: #fff;
+    box-shadow: 0 2px 8px rgba(30,39,97,0.12);
+    border: 2px solid transparent; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .deck-thumb-item:hover .deck-thumb-canvas-wrap { box-shadow: 0 4px 14px rgba(30,39,97,0.2); }
+  .deck-thumb-item.active .deck-thumb-canvas-wrap { border-color: #FEDF01; box-shadow: 0 0 0 1px #FEDF01, 0 4px 14px rgba(30,39,97,0.22); }
+  .deck-thumb-canvas-wrap canvas, .deck-thumb-canvas-wrap img { display: block; width: 100%; height: auto; }
   .deck-close {
     background: rgba(46,93,159,0.12); border: 1px solid rgba(46,93,159,0.3); color: #2e5d9f;
     width: 36px; height: 36px; cursor: pointer; font-size: 0.95rem; border-radius: 50%;
@@ -1134,7 +1155,7 @@
   </div>
   <div class="hero-center">
     <div style="display:flex;align-items:center;gap:0.75rem;margin-top:5px;margin-bottom:2.25rem;opacity:0;animation:fadeUp 0.7s ease forwards 0.2s;">
-      <span class="hero-eyebrow" style="margin-bottom:0;">Senior Product Design Leader</span>
+      <span class="hero-eyebrow" style="margin-bottom:0;">Senior Design Leader</span>
       <span id="ai-badge" style="display:inline-flex;align-items:center;gap:5px;padding:0.28rem 0.85rem;background:linear-gradient(135deg,#2e5d9f,#2e5d9f);border-radius:9999px;font-size:0.78rem;font-weight:500;color:#fff;letter-spacing:0.04em;">
         <span id="ai-dot" style="width:7px;height:7px;border-radius:50%;background:#8BD4DF;display:inline-block;animation:aipulse 1.8s ease-in-out infinite;"></span>
         Strategy, Systems &amp; AI
@@ -1658,15 +1679,19 @@
     <div class="hero-stats">
       <div>
         <span class="stat-num">10+</span>
-        <span class="stat-label">0→1 platforms shipped</span>
+        <span class="stat-label">0→1 product shipped</span>
       </div>
       <div>
         <span class="stat-num">Any Scale</span>
-        <span class="stat-label">Startup and Enterprise.</span>
+        <span class="stat-label">From Startup to Enterprise.</span>
       </div>
       <div>
-        <span class="stat-num">AI Design Leader</span>
-        <span class="stat-label">Strategy + hands-on building.</span>
+        <span class="stat-num">Design Leader</span>
+        <span class="stat-label">Strategy through execution.</span>
+      </div>
+      <div>
+        <span class="stat-num">AI Builder</span>
+        <span class="stat-label">Applying AI to build with speed.</span>
       </div>
     </div>
     <div class="hero-cta">
@@ -1706,7 +1731,7 @@
             <span class="case-tag">Mobile</span>
             <span class="case-tag">AI / Voice</span>
             <span class="case-tag">Search UX</span>
-            <span class="case-tag">Sr. Design Manager</span>
+            <span class="case-tag">Sr. Design Leader</span>
           </div>
         </div>
         <div class="case-meta-right">
@@ -1746,7 +1771,7 @@
             <span class="case-tag">B2B Fintech</span>
             <span class="case-tag">0→1</span>
             <span class="case-tag">Real-time Data</span>
-            <span class="case-tag">Sr. Design Manager</span>
+            <span class="case-tag">Sr. Design Leader</span>
           </div>
         </div>
         <div class="case-meta-right">
@@ -1837,9 +1862,21 @@
         </ul>
       </div>
 
+      <div class="l-pillar l-pillar--dark">
+        <div class="l-pillar-header">
+          <span class="l-pillar-num l-pillar-num--light">02</span>
+          <p class="l-pillar-title l-pillar-title--light">Future-Ready / AI &amp; Innovation</p>
+        </div>
+        <ul class="l-pillar-list l-pillar-list--light">
+          <li>Accelerate discovery with <strong>AI-assisted synthesis</strong> and <strong>sentiment analysis</strong> while preserving research quality</li>
+          <li>Partner with Engineering and Legal to ensure AI-powered experiences are <strong>ethical, transparent, and user-centric</strong></li>
+          <li>Train full design team on <strong>Claude Code</strong>, <strong>AI design review</strong>, and <strong>hackathon readiness</strong> with repo access</li>
+        </ul>
+      </div>
+
       <div class="l-pillar">
         <div class="l-pillar-header">
-          <span class="l-pillar-num">02</span>
+          <span class="l-pillar-num">03</span>
           <p class="l-pillar-title">Outcomes &amp; Impact</p>
         </div>
         <ul class="l-pillar-list">
@@ -1851,25 +1888,13 @@
 
       <div class="l-pillar">
         <div class="l-pillar-header">
-          <span class="l-pillar-num">03</span>
+          <span class="l-pillar-num">04</span>
           <p class="l-pillar-title">Teams, Culture &amp; Trust</p>
         </div>
         <ul class="l-pillar-list">
           <li>Foster <strong>psychological safety</strong> and <strong>no-blame environments</strong> where teams surface risk early and learn fast</li>
           <li>Develop <strong>"leaders of leaders"</strong> through structured coaching, storytelling, and <strong>stakeholder influence</strong></li>
           <li>Led <strong>Women@ACV</strong> to elevate women leaders as mentors through structured <strong>knowledge-sharing programs</strong></li>
-        </ul>
-      </div>
-
-      <div class="l-pillar l-pillar--dark">
-        <div class="l-pillar-header">
-          <span class="l-pillar-num l-pillar-num--light">04</span>
-          <p class="l-pillar-title l-pillar-title--light">Future-Ready / AI &amp; Innovation</p>
-        </div>
-        <ul class="l-pillar-list l-pillar-list--light">
-          <li>Accelerate discovery with <strong>AI-assisted synthesis</strong> and <strong>sentiment analysis</strong> while preserving research quality</li>
-          <li>Partner with Engineering and Legal to ensure AI-powered experiences are <strong>ethical, transparent, and user-centric</strong></li>
-          <li>Train full design team on <strong>Claude Code</strong>, <strong>AI design review</strong>, and <strong>hackathon readiness</strong> with repo access</li>
         </ul>
       </div>
 
@@ -1885,7 +1910,7 @@
     <div class="resume-hero-strip">
       <p class="rh-tag">Resume · Product Design Leadership</p>
       <h2 class="rh-name"><svg class="name-mark" aria-hidden="true"><use href="#sunburst-icon"/></svg>Margaux Kan</h2>
-      <p class="rh-title">Senior Product Design Manager · 18+ years</p>
+      <p class="rh-title">Senior Design Leader · 18+ years</p>
       <div class="rh-links">
         <a class="rh-link" href="http://linkedin.com/in/margaux-kan-07b4502" target="_blank">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -2041,7 +2066,10 @@
       </div>
     </div>
     <div class="deck-progress"><div class="deck-progress-fill" id="deckProgress"></div></div>
-    <div class="deck-slides" id="deckSlides"></div>
+    <div class="deck-body">
+      <div class="deck-thumb-sidebar" id="deckThumbSidebar"></div>
+      <div class="deck-slides" id="deckSlides"></div>
+    </div>
     <div class="deck-footer-nav">
       <button class="deck-btn" onclick="prevSlide()">← Prev</button>
       <span class="deck-counter" id="deckCounter">1 / 1</span>
@@ -2176,6 +2204,7 @@ async function renderPage(num) {
   currentRenderTask = null;
   document.getElementById('deckCounter').textContent = num + ' / ' + totalPages;
   updateDeckProgress();
+  updateActiveThumb();
 }
 
 function nextSlide() { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } }
@@ -2249,31 +2278,88 @@ async function openCaseStudy(key) {
   if (pdf.type === 'html') {
     document.getElementById('deckPdfBtn').style.display = pdf.pdfUrl ? '' : 'none';
     document.querySelector('.deck-footer-nav').style.display = 'none';
+    document.getElementById('deckThumbSidebar').innerHTML = '';
     document.getElementById('deckSlides').innerHTML =
       `<iframe class="deck-html-frame" src="${pdf.url}" title="${pdf.label}"></iframe>`;
     return;
   }
 
+  // PDF-rendered case studies get the same left-hand slide-thumbnail rail as
+  // the self-contained HTML decks, so the footer Prev/Next bar (a fallback
+  // for when thumbnails aren't available) stays hidden here too.
   document.getElementById('deckPdfBtn').style.display = '';
-  document.querySelector('.deck-footer-nav').style.display = '';
+  document.querySelector('.deck-footer-nav').style.display = 'none';
   document.getElementById('deckCounter').textContent = '\u2014 / \u2014';
   document.getElementById('deckProgress').style.width = '0%';
+  document.getElementById('deckThumbSidebar').innerHTML = '';
   document.getElementById('deckSlides').innerHTML =
     '<div class="deck-pdf-stage"><div class="deck-loading">Loading case study\u2026</div></div>';
   try {
     pdfDoc = await pdfjsLib.getDocument(pdf.url).promise;
     totalPages = pdfDoc.numPages;
     renderPage(currentPage);
+    buildThumbSidebar();
   } catch (e) {
     document.getElementById('deckSlides').innerHTML =
       `<div class="deck-pdf-stage"><div class="deck-loading">Couldn't load this case study.<br><a href="${pdf.url}" target="_blank" style="color:#2e5d9f">Open the file directly \u2192</a></div></div>`;
   }
 }
 
+// Build the left-hand rail of numbered page thumbnails for PDF-rendered
+// case studies (mirrors the slide rail on the self-contained HTML decks).
+// Renders each page to a small canvas at low scale — cheap enough for the
+// page counts these decks run (a dozen or so slides).
+let thumbRenderToken = 0;
+async function buildThumbSidebar() {
+  const token = ++thumbRenderToken;
+  const sidebar = document.getElementById('deckThumbSidebar');
+  sidebar.innerHTML = '';
+  if (!pdfDoc) return;
+  const THUMB_WIDTH = 150;
+  for (let num = 1; num <= totalPages; num++) {
+    let page;
+    try { page = await pdfDoc.getPage(num); } catch (e) { continue; }
+    if (token !== thumbRenderToken) return;
+
+    const base = page.getViewport({ scale: 1 });
+    const scale = THUMB_WIDTH / base.width;
+    const dpr = window.devicePixelRatio || 1;
+    const viewport = page.getViewport({ scale: scale * dpr });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    canvas.style.width = THUMB_WIDTH + 'px';
+    canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
+
+    try { await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise; } catch (e) { continue; }
+    if (token !== thumbRenderToken) return;
+
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'deck-thumb-item' + (num === currentPage ? ' active' : '');
+    item.dataset.page = num;
+    item.innerHTML = `<span class="deck-thumb-num">${num}</span><span class="deck-thumb-canvas-wrap"></span>`;
+    item.querySelector('.deck-thumb-canvas-wrap').appendChild(canvas);
+    item.addEventListener('click', () => { currentPage = num; renderPage(num); });
+    sidebar.appendChild(item);
+  }
+}
+
+// Keep the active thumbnail in sync whenever the current page changes.
+function updateActiveThumb() {
+  document.querySelectorAll('#deckThumbSidebar .deck-thumb-item').forEach(item => {
+    const isActive = Number(item.dataset.page) === currentPage;
+    item.classList.toggle('active', isActive);
+    if (isActive) item.scrollIntoView({ block: 'nearest' });
+  });
+}
+
 function closeDeck() {
   document.getElementById('deckPanel').classList.remove('open');
   document.body.style.overflow = '';
   renderToken++;                                     // invalidate any in-flight render
+  thumbRenderToken++;                                 // invalidate any in-flight thumbnail render
   if (currentRenderTask) { try { currentRenderTask.cancel(); } catch (e) {} currentRenderTask = null; }
 }
 
