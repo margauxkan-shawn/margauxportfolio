@@ -2113,14 +2113,11 @@ document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 // and download even though the main view is the interactive HTML demo.
 //   MK_Casestudy1_A.html / .pdf → ACV EASE     (1 = first ACV study,  A = ACV)
 //   MK_Casestudy2_A.html / .pdf → ACV Capital  (2 = second ACV study, A = ACV)
-//   MK_Casestudy3_R.pdf         → RBC MyAdvisor (3 = third study,     R = RBC)
+//   MK_Casestudy3_R.html / .pdf → RBC MyAdvisor (3 = third study,     R = RBC)
 const pdfData = {
   ease:    { url: "case-studies/MK_Casestudy1_A.html", name: "MK_Casestudy1_A.html", label: "ACV EASE — AI Voice Search", type: "html", pdfUrl: "case-studies/MK_Casestudy1_A.pdf", pdfName: "MK_Casestudy1_A.pdf" },
   capital: { url: "case-studies/MK_Casestudy2_A.html", name: "MK_Casestudy2_A.html", label: "ACV Capital — Floorplan Platform", type: "html", pdfUrl: "case-studies/MK_Casestudy2_A.pdf", pdfName: "MK_Casestudy2_A.pdf" },
-  // prototypeRect is the yellow "View the full interactive prototype" button's
-  // exact position on the last page (page 12 of 12, 959x540pt), expressed as
-  // percentages of the page so the hotspot lines up at any render size.
-  rbc:     { url: "case-studies/MK_Casestudy3_R.pdf", name: "MK_Casestudy3_R.pdf", label: "RBC MyAdvisor — Digital Advice Platform", prototypeUrl: "case-studies/prototypes/RBC_myadvisor_Static_Final.html", prototypeRect: { left: 29.78, top: 84.37, width: 40.54, height: 7.6 } },
+  rbc:     { url: "case-studies/MK_Casestudy3_R.html", name: "MK_Casestudy3_R.html", label: "RBC MyAdvisor — Digital Advice Platform", type: "html", pdfUrl: "case-studies/MK_Casestudy3_R.pdf", pdfName: "MK_Casestudy3_R.pdf" },
 };
 
 // ── Case-study deck: render the PDF page-by-page inside the in-page overlay ──
